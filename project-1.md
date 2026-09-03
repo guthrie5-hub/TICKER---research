@@ -46,3 +46,17 @@ The next research steps are to build a multi-year history of ARR, revenue, opera
 **Watch - Defer.** **UNSOURCED.**
 
 This call would change if evidence shows that Digital Media ARR growth is not durable or cannot be sustained without material margin compression. **UNSOURCED.**
+
+---
+
+This report was written for FIN 43900 (AI Finance Applications, Purdue) as a learning exercise. It is not investment research and it is not financial advice.
+
+AI assistance: drafted with Codex, resumed from my Lab 03 session; sources gathered and verified by me; the judgments are mine.
+
+Any remaining errors are my own.
+
+## This report was written for FIN 43900 (AI Finance Applications, Purdue) as a learning exercise. It is not investment research and it is not financial advice.
+
+AI assistance: drafted with [name your tools — e.g., ChatGPT/Codex], resumed from my Lab 03 session; sources gathered and verified by me; the judgments are mine.
+
+Any remaining errors are my own.
