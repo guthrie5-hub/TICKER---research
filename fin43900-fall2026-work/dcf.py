@@ -1,151 +1,178 @@
-"""Five-year FCFF DCF (all currency inputs are USD millions)."""
+"""
+FIN 43900: Five-Year FCFF DCF Model, Sensitivity Grid, and Reverse DCF
+Company: Adobe Inc. (NASDAQ: ADBE)
+"""
 
-# Editable inputs (USD millions, except per-share amounts)
-STARTING_FCFF = 10067.66  # FY2025 estimate; see Table.md
-GROWTH_RATES = [0.10, 0.09, 0.08, 0.07, 0.06]  # Analyst forecast
-WACC = 0.1033  # Calculated estimate
-TERMINAL_GROWTH = 0.03  # Valuation assumption
-NON_OPERATING_CASH = 5626.0  # As of 2026-05-29
-DEBT = 6645.0  # As of 2026-05-29
-DILUTED_SHARES = 427.0  # FY2025 weighted-average diluted shares
+# ==============================================================================
+# INPUTS BLOCK (Editable by hand)
+# ==============================================================================
+# Mode: Set to 'ADBE' for Adobe Inc. or 'TRAINING' for Lab 05/06 training case
+MODE = 'ADBE'
 
-# Editable sensitivity and reverse-DCF inputs
-SENSITIVITY_WACCS = [0.09, 0.10, 0.11]
-SENSITIVITY_TERMINAL_GROWTHS = [0.02, 0.03, 0.04]
-TARGET_SHARE_PRICE = 250.35
-REVERSE_SHIFT_LOWER_BOUND = -0.05
-REVERSE_SHIFT_UPPER_BOUND = 0.10
-
-
-def calculate_value_per_share(wacc, terminal_growth, growth_rates):
-    """Return the DCF value per diluted share for a complete input set."""
-    fcff = STARTING_FCFF
-    pv_explicit_fcff = 0.0
-    for year, growth_rate in enumerate(growth_rates, start=1):
-        fcff *= 1.0 + growth_rate
-        pv_explicit_fcff += fcff / (1.0 + wacc) ** year
-
-    terminal_value = fcff * (1.0 + terminal_growth) / (wacc - terminal_growth)
-    pv_terminal_value = terminal_value / (1.0 + wacc) ** 5
-    equity_value = pv_explicit_fcff + pv_terminal_value + NON_OPERATING_CASH - DEBT
-    return equity_value / DILUTED_SHARES
-
-
-def print_sensitivity_grid():
-    """Print value per share for each terminal-growth/WACC combination."""
-    print("\nSensitivity Grid: Value per Diluted Share")
-    column_width = 16
-    header = "Terminal Growth \\ WACC".ljust(column_width)
-    header += "".join(f"{wacc:.2%}".rjust(column_width) for wacc in SENSITIVITY_WACCS)
-    print(header)
-    print("-" * len(header))
-
-    for terminal_growth in SENSITIVITY_TERMINAL_GROWTHS:
-        row = f"{terminal_growth:.2%}".ljust(column_width)
-        for wacc in SENSITIVITY_WACCS:
-            if terminal_growth >= wacc:
-                cell = "invalid"
-            else:
-                cell = f"{calculate_value_per_share(wacc, terminal_growth, GROWTH_RATES):.4f}"
-            row += cell.rjust(column_width)
-        print(row)
+if MODE == 'TRAINING':
+    # Lab 05 / 06 Official Training Case Inputs
+    FCFF_0 = 100.0                       # Starting FCFF ($M)
+    GROWTH_RATES = [0.08, 0.06, 0.05, 0.04, 0.03]  # Growth Years 1-5
+    WACC = 0.10                          # Discount rate (10%)
+    G_TERMINAL = 0.03                    # Terminal growth rate (3%)
+    CASH = 50.0                          # Non-operating cash ($M)
+    DEBT = 300.0                         # Debt ($M)
+    SHARES = 50.0                        # Diluted shares (M)
+    TARGET_PRICE = 30.00                 # Target share price for Reverse DCF ($)
+    WACC_LIST = [0.09, 0.10, 0.11]       # Sensitivity grid WACC
+    G_TERM_LIST = [0.02, 0.03, 0.04]     # Sensitivity grid terminal growth
+    BOUND_LOW = -0.05                    # Reverse DCF lower bound shift (-5 ppt)
+    BOUND_HIGH = 0.10                    # Reverse DCF upper bound shift (+10 ppt)
+else:
+    # Adobe Inc. (ADBE) Inputs — FY2025 Form 10-K & Market Data (Valuation Date: Sept 8, 2026)
+    # Sourced from Form 10-K ended Nov 28, 2025:
+    # Operating Cash Flow: $10,031M, Capex: $360M, Cash interest: $246M, Effective tax: 18.4%
+    # Starting FCFF = OCF ($10,031M) + After-tax Interest ($200.7M) - Capex ($360M) = $9,871.7M
+    FCFF_0 = 9871.7                      # Starting FCFF ($M)
+    # Baseline forecast: Fading from recent Digital Media ARR growth (11.5% YoY) towards terminal
+    GROWTH_RATES = [0.11, 0.095, 0.08, 0.065, 0.05]  # Stated 5-year fade
+    WACC = 0.10                          # Estimated WACC (~9.7%-10.0%, baseline 10.0%)
+    G_TERMINAL = 0.03                    # Long-run economic terminal growth (3.0%)
+    CASH = 5431.0                        # Cash & cash equivalents ($M, Form 10-K p. 47)
+    DEBT = 6210.0                        # Total long-term debt carrying value ($M, Form 10-K p. 47)
+    SHARES = 427.0                       # Diluted weighted-average shares (M, Form 10-K p. 48)
+    TARGET_PRICE = 257.60                # Current market share price ($ as of Sept 8, 2026)
+    WACC_LIST = [0.09, 0.10, 0.11]       # Sensitivity grid WACC values
+    G_TERM_LIST = [0.02, 0.03, 0.04]     # Sensitivity grid terminal growth values
+    BOUND_LOW = -0.20                    # Reverse DCF lower bound shift (-20 ppt)
+    BOUND_HIGH = 0.20                    # Reverse DCF upper bound shift (+20 ppt)
 
 
-def print_reverse_dcf():
-    """Solve for a uniform shift to all explicit growth rates by bisection."""
-    print("\nReverse DCF: Uniform Shift to All Five Explicit Growth Rates")
-    held_fixed = (
-        f"starting FCFF={STARTING_FCFF:.4f}; WACC={WACC:.2%}; "
-        f"terminal growth={TERMINAL_GROWTH:.2%}; cash={NON_OPERATING_CASH:.4f}; "
-        f"debt={DEBT:.4f}; diluted shares={DILUTED_SHARES:.4f}; "
-        f"base growth rates={GROWTH_RATES}"
-    )
-    print(f"Target share price: {TARGET_SHARE_PRICE:.4f}")
-    print(f"Inputs held fixed: {held_fixed}")
+def compute_dcf(fcff_0, growths, wacc, g_term, cash, debt, shares):
+    """Computes full 5-year FCFF DCF model."""
+    if g_term >= wacc:
+        return None
 
-    lower = REVERSE_SHIFT_LOWER_BOUND
-    upper = REVERSE_SHIFT_UPPER_BOUND
-    if lower > upper:
-        print("No solution: lower bound is greater than upper bound.")
-        return
-    if any(growth_rate + bound <= -1.0 for growth_rate in GROWTH_RATES for bound in (lower, upper)):
-        print("No solution: this bracket pushes at least one annual growth rate to -100% or below.")
-        return
+    fcff_list = []
+    pv_explicit_list = []
+    current_fcff = fcff_0
 
-    def value_at_shift(shift):
-        shifted_growth_rates = [growth_rate + shift for growth_rate in GROWTH_RATES]
-        return calculate_value_per_share(WACC, TERMINAL_GROWTH, shifted_growth_rates)
+    for t, g in enumerate(growths, start=1):
+        current_fcff = current_fcff * (1.0 + g)
+        fcff_list.append(current_fcff)
+        pv_fcff = current_fcff / ((1.0 + wacc) ** t)
+        pv_explicit_list.append(pv_fcff)
 
-    lower_value = value_at_shift(lower)
-    upper_value = value_at_shift(upper)
-    minimum_value = min(lower_value, upper_value)
-    maximum_value = max(lower_value, upper_value)
-    if not minimum_value <= TARGET_SHARE_PRICE <= maximum_value:
-        print(
-            "No solution in this bracket: target is outside the range "
-            f"{minimum_value:.4f} to {maximum_value:.4f}."
-        )
-        return
+    pv_explicit = sum(pv_explicit_list)
+    fcff_5 = fcff_list[-1]
+    tv_5 = fcff_5 * (1.0 + g_term) / (wacc - g_term)
+    pv_tv = tv_5 / ((1.0 + wacc) ** 5)
 
-    for _ in range(100):
-        midpoint = (lower + upper) / 2.0
-        midpoint_value = value_at_shift(midpoint)
-        if abs(midpoint_value - TARGET_SHARE_PRICE) < 0.00000001:
-            print(f"Solved uniform growth-rate shift: {midpoint:.8%}")
-            return
-        if midpoint_value < TARGET_SHARE_PRICE:
-            lower = midpoint
-        else:
-            upper = midpoint
+    ev = pv_explicit + pv_tv
+    eq_val = ev + cash - debt
+    val_per_share = eq_val / shares
+    tv_share_of_ev = pv_tv / ev
 
-    midpoint = (lower + upper) / 2.0
-    midpoint_value = value_at_shift(midpoint)
-    if abs(midpoint_value - TARGET_SHARE_PRICE) < 0.0001:
-        print(f"Solved uniform growth-rate shift: {midpoint:.8%}")
-    else:
-        print("No solution in this bracket: bisection did not meet the solution tolerance.")
+    return {
+        'fcff_list': fcff_list,
+        'pv_explicit': pv_explicit,
+        'tv_5': tv_5,
+        'pv_tv': pv_tv,
+        'ev': ev,
+        'eq_val': eq_val,
+        'val_per_share': val_per_share,
+        'tv_share_of_ev': tv_share_of_ev,
+    }
 
 
 def main():
-    if TERMINAL_GROWTH >= WACC:
-        raise SystemExit(
-            "Error: terminal growth must be less than WACC for the Gordon-growth formula."
-        )
+    if G_TERMINAL >= WACC:
+        print(f"Error: Terminal growth ({G_TERMINAL:.2%}) must be strictly less than WACC ({WACC:.2%}).")
+        return
 
-    if len(GROWTH_RATES) != 5:
-        raise SystemExit("Error: provide exactly five yearly growth rates.")
+    base_res = compute_dcf(FCFF_0, GROWTH_RATES, WACC, G_TERMINAL, CASH, DEBT, SHARES)
 
-    fcff = STARTING_FCFF
-    explicit_fcff = []
-    for growth_rate in GROWTH_RATES:
-        fcff *= 1.0 + growth_rate
-        explicit_fcff.append(fcff)
+    # --------------------------------------------------------------------------
+    # BLOCK 1: TWELVE LABELLED LINES (BASE CASE)
+    # --------------------------------------------------------------------------
+    print("=" * 65)
+    print(f"FCFF DCF MODEL OUTPUT ({MODE} BASE CASE)")
+    print("=" * 65)
+    for t, fcff in enumerate(base_res['fcff_list'], start=1):
+        print(f"FCFF Year {t}: {fcff:,.4f}")
+    print(f"Present value of the explicit FCFF: {base_res['pv_explicit']:,.4f}")
+    print(f"Terminal value at Year 5: {base_res['tv_5']:,.4f}")
+    print(f"Present value of the terminal value: {base_res['pv_tv']:,.4f}")
+    print(f"Enterprise value: {base_res['ev']:,.4f}")
+    print(f"Equity value: {base_res['eq_val']:,.4f}")
+    print(f"Value per diluted share: {base_res['val_per_share']:,.4f}")
+    print(f"Present value of the terminal value as a share of enterprise value: {base_res['tv_share_of_ev']:.4f}")
 
-    pv_explicit_fcff = sum(
-        cash_flow / (1.0 + WACC) ** year
-        for year, cash_flow in enumerate(explicit_fcff, start=1)
-    )
-    terminal_value_year_5 = (
-        explicit_fcff[-1] * (1.0 + TERMINAL_GROWTH) / (WACC - TERMINAL_GROWTH)
-    )
-    pv_terminal_value = terminal_value_year_5 / (1.0 + WACC) ** 5
-    enterprise_value = pv_explicit_fcff + pv_terminal_value
-    equity_value = enterprise_value + NON_OPERATING_CASH - DEBT
-    value_per_diluted_share = equity_value / DILUTED_SHARES
-    terminal_value_share_of_ev = pv_terminal_value / enterprise_value
+    # --------------------------------------------------------------------------
+    # BLOCK 2: SENSITIVITY GRID (VALUE PER DILUTED SHARE)
+    # --------------------------------------------------------------------------
+    print("\n" + "=" * 65)
+    print("SENSITIVITY GRID: Value per diluted share ($)")
+    print("=" * 65)
+    header = f"{'WACC \\ g':<12}" + "".join([f"{g_t:>14.1%}" for g_t in G_TERM_LIST])
+    print(header)
+    print("-" * len(header))
 
-    for year, cash_flow in enumerate(explicit_fcff, start=1):
-        print(f"FCFF Year {year}: {cash_flow:.4f}")
-    print(f"PV of Explicit FCFF: {pv_explicit_fcff:.4f}")
-    print(f"Terminal Value at Year 5: {terminal_value_year_5:.4f}")
-    print(f"PV of Terminal Value: {pv_terminal_value:.4f}")
-    print(f"Enterprise Value: {enterprise_value:.4f}")
-    print(f"Equity Value: {equity_value:.4f}")
-    print(f"Value per Diluted Share: {value_per_diluted_share:.4f}")
-    print(f"PV Terminal Value as Share of EV: {terminal_value_share_of_ev:.4f}")
-    print_sensitivity_grid()
-    print_reverse_dcf()
+    for w in WACC_LIST:
+        row_str = f"{w:<12.1%}"
+        for gt in G_TERM_LIST:
+            if gt >= w:
+                row_str += f"{'Invalid':>14}"
+            else:
+                grid_res = compute_dcf(FCFF_0, GROWTH_RATES, w, gt, CASH, DEBT, SHARES)
+                row_str += f"{grid_res['val_per_share']:>14.2f}"
+        print(row_str)
+
+    # --------------------------------------------------------------------------
+    # BLOCK 3: REVERSE DCF (SOLVE UNIFORM GROWTH SHIFT FOR TARGET PRICE)
+    # --------------------------------------------------------------------------
+    print("\n" + "=" * 65)
+    print(f"REVERSE DCF: Target Share Price = ${TARGET_PRICE:.2f}")
+    print("=" * 65)
+
+    # Validation: refuse bracket that pushes any growth to <= -100%
+    for g in GROWTH_RATES:
+        if (g + BOUND_LOW) <= -1.0:
+            print(f"Error: Lower bound shift pushes growth to <= -100% ({g + BOUND_LOW:.2%}).")
+            return
+
+    # Check bounds
+    res_low = compute_dcf(FCFF_0, [g + BOUND_LOW for g in GROWTH_RATES], WACC, G_TERMINAL, CASH, DEBT, SHARES)
+    res_high = compute_dcf(FCFF_0, [g + BOUND_HIGH for g in GROWTH_RATES], WACC, G_TERMINAL, CASH, DEBT, SHARES)
+
+    if not (res_low['val_per_share'] <= TARGET_PRICE <= res_high['val_per_share']):
+        print(f"No solution inside bracket [{BOUND_LOW*100:+.2f} ppt, {BOUND_HIGH*100:+.2f} ppt].")
+        print(f"Value at lower bound: ${res_low['val_per_share']:.2f}; Value at upper bound: ${res_high['val_per_share']:.2f}")
+    else:
+        # Bisection search
+        low = BOUND_LOW
+        high = BOUND_HIGH
+        for _ in range(100):
+            mid = (low + high) / 2.0
+            shifted_g = [g + mid for g in GROWTH_RATES]
+            r = compute_dcf(FCFF_0, shifted_g, WACC, G_TERMINAL, CASH, DEBT, SHARES)
+            if r['val_per_share'] < TARGET_PRICE:
+                low = mid
+            else:
+                high = mid
+
+        solved_shift = mid
+        solved_growths = [g + solved_shift for g in GROWTH_RATES]
+
+        print(f"Solved uniform growth shift: {solved_shift * 100:+.2f} percentage points (shift = {solved_shift:+.4f})")
+        print(f"Target share price: ${TARGET_PRICE:.2f}")
+        print("Inputs held fixed:")
+        print(f"  - Starting FCFF: ${FCFF_0:,.1f}M")
+        print(f"  - WACC: {WACC:.2%}")
+        print(f"  - Terminal growth: {G_TERMINAL:.2%}")
+        print(f"  - Non-operating cash: ${CASH:,.1f}M")
+        print(f"  - Debt: ${DEBT:,.1f}M")
+        print(f"  - Diluted shares: {SHARES:.1f}M")
+        print("\nImplied 5-year explicit growth path:")
+        for t, (orig, sg) in enumerate(zip(GROWTH_RATES, solved_growths), start=1):
+            print(f"  Year {t}: {orig:.1%} baseline -> {sg:.2%} implied")
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
+

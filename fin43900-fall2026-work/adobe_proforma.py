@@ -5,6 +5,8 @@ labels are in adobe_proforma_research.md. Inputs marked PLACEHOLDER need
 company-specific sourcing before this becomes an investment conclusion.
 """
 
+from copy import deepcopy
+
 
 # Opening FY2025 balance sheet, from Adobe FY2025 10-K (USD millions).
 # Other assets is the balancing aggregate of investments, receivables, prepaid
@@ -51,6 +53,61 @@ TERMINAL_GROWTH = 0.03                                   # Week 3 judgment
 SHARES_OUTSTANDING = 427.0                               # FY2025 diluted shares, millions
 TOLERANCE = 0.0001
 
+# The base set is never edited in a sensitivity run. Each run starts with a
+# fresh deepcopy of this dictionary, then changes one listed driver only.
+BASE_INPUTS = {
+    "opening": OPENING,
+    "growth": GROWTH,
+    "gross_margin": GROSS_MARGIN,
+    "sga_to_gross_profit": SGA_TO_GROSS_PROFIT,
+    "depreciation_to_opening_ppe": DEPRECIATION_TO_OPENING_PPE,
+    "impairment": IMPAIRMENT,
+    "capex": CAPEX,
+    "tax_rate": TAX_RATE,
+    "inventory_days": INVENTORY_DAYS,
+    "floor_plan_to_inventory": FLOOR_PLAN_TO_INVENTORY,
+    "other_working_capital_to_revenue_change": OTHER_WORKING_CAPITAL_TO_REVENUE_CHANGE,
+    "minimum_cash": MINIMUM_CASH,
+    "revolver_limit": REVOLVER_LIMIT,
+    "rate_floor_plan": RATE_FLOOR_PLAN,
+    "rate_debt": RATE_DEBT,
+    "rate_revolver": RATE_REVOLVER,
+    "debt_repayment": DEBT_REPAYMENT,
+    "buyback": BUYBACK,
+    "cost_of_equity": COST_OF_EQUITY,
+    "terminal_growth": TERMINAL_GROWTH,
+    "shares_outstanding": SHARES_OUTSTANDING,
+    "valuation_valid": False,
+    "valuation_limitation": (
+        "working-capital, financing, debt-repayment, and buyback inputs are placeholders"
+    ),
+}
+
+# Existing ranges from adobe_proforma_research.md. Percentages are decimal
+# inputs; the displayed values below identify percentage-point changes.
+SENSITIVITY_DRIVERS = [
+    {
+        "name": "Revenue growth",
+        "field": "growth",
+        "units": "annual revenue growth (%)",
+        "cases": {
+            "Lower": [0.06, 0.05, 0.04, 0.03, 0.02],
+            "Base": [0.08, 0.07, 0.06, 0.05, 0.04],
+            "Higher": [0.10, 0.09, 0.08, 0.07, 0.06],
+        },
+    },
+    {
+        "name": "SG&A / gross profit",
+        "field": "sga_to_gross_profit",
+        "units": "percentage of gross profit",
+        "cases": {
+            "Lower": [0.375, 0.37, 0.37, 0.37, 0.37],
+            "Base": [0.385, 0.38, 0.38, 0.38, 0.38],
+            "Higher": [0.395, 0.39, 0.39, 0.39, 0.39],
+        },
+    },
+]
+
 
 def assert_balanced(year, gap, cash, minimum_cash):
     """Raise a specific error before valuation if a check fails."""
@@ -62,49 +119,49 @@ def assert_balanced(year, gap, cash, minimum_cash):
         )
 
 
-def project_year(opening, index):
+def project_year(opening, index, inputs):
     """Build one forecast year, then return it as the next opening balance sheet."""
-    revenue = opening["revenue"] * (1 + GROWTH[index])
-    gross_profit = revenue * GROSS_MARGIN[index]
-    sga = gross_profit * SGA_TO_GROSS_PROFIT[index]
-    depreciation = opening["ppe"] * DEPRECIATION_TO_OPENING_PPE
-    impairment = IMPAIRMENT[index]
+    revenue = opening["revenue"] * (1 + inputs["growth"][index])
+    gross_profit = revenue * inputs["gross_margin"][index]
+    sga = gross_profit * inputs["sga_to_gross_profit"][index]
+    depreciation = opening["ppe"] * inputs["depreciation_to_opening_ppe"]
+    impairment = inputs["impairment"][index]
     operating_income = gross_profit - sga - depreciation - impairment
     interest = (
-        opening["floor_plan"] * RATE_FLOOR_PLAN
-        + opening["debt"] * RATE_DEBT
-        + opening["revolver"] * RATE_REVOLVER
+        opening["floor_plan"] * inputs["rate_floor_plan"]
+        + opening["debt"] * inputs["rate_debt"]
+        + opening["revolver"] * inputs["rate_revolver"]
     )
     pretax_income = operating_income - interest
-    tax = max(0.0, pretax_income) * TAX_RATE[index]
+    tax = max(0.0, pretax_income) * inputs["tax_rate"][index]
     net_income = pretax_income - tax
 
-    inventory = (revenue - gross_profit) * INVENTORY_DAYS / 365.0
-    floor_plan = inventory * FLOOR_PLAN_TO_INVENTORY
-    ppe = opening["ppe"] + CAPEX[index] - depreciation
+    inventory = (revenue - gross_profit) * inputs["inventory_days"] / 365.0
+    floor_plan = inventory * inputs["floor_plan_to_inventory"]
+    ppe = opening["ppe"] + inputs["capex"][index] - depreciation
     revenue_change = revenue - opening["revenue"]
-    other_working_capital_change = OTHER_WORKING_CAPITAL_TO_REVENUE_CHANGE * revenue_change
+    other_working_capital_change = inputs["other_working_capital_to_revenue_change"] * revenue_change
     other_assets = opening["other_assets"] + other_working_capital_change - impairment
-    repayment = min(DEBT_REPAYMENT[index], opening["debt"])
+    repayment = min(inputs["debt_repayment"][index], opening["debt"])
     debt = opening["debt"] - repayment
-    equity = opening["equity"] + net_income - BUYBACK[index]
+    equity = opening["equity"] + net_income - inputs["buyback"][index]
 
     inventory_change = inventory - opening["inventory"]
     floor_plan_change = floor_plan - opening["floor_plan"]
     fcfe = (
-        net_income + depreciation + impairment - CAPEX[index]
+        net_income + depreciation + impairment - inputs["capex"][index]
         - inventory_change - other_working_capital_change
         + floor_plan_change - repayment
     )
 
-    cash = opening["cash"] + fcfe - BUYBACK[index]
+    cash = opening["cash"] + fcfe - inputs["buyback"][index]
     revolver = opening["revolver"]
-    revolver_repayment = min(revolver, max(0.0, cash - MINIMUM_CASH))
+    revolver_repayment = min(revolver, max(0.0, cash - inputs["minimum_cash"]))
     cash -= revolver_repayment
     revolver -= revolver_repayment
-    if cash < MINIMUM_CASH:
-        draw = MINIMUM_CASH - cash
-        available = REVOLVER_LIMIT - revolver
+    if cash < inputs["minimum_cash"]:
+        draw = inputs["minimum_cash"] - cash
+        available = inputs["revolver_limit"] - revolver
         if draw > available + TOLERANCE:
             raise ValueError(
                 f"FY{YEARS[index]}E: revolver draw {draw:.4f} exceeds available capacity {available:.4f}"
@@ -117,7 +174,7 @@ def project_year(opening, index):
     total_assets = cash + inventory + ppe + other_assets
     total_liabilities_equity = floor_plan + debt + revolver + opening["other_liabilities"] + equity
     gap = total_assets - total_liabilities_equity
-    assert_balanced(YEARS[index], gap, cash, MINIMUM_CASH)
+    assert_balanced(YEARS[index], gap, cash, inputs["minimum_cash"])
 
     return {
         "year": YEARS[index], "revenue": revenue, "gross_profit": gross_profit,
@@ -128,7 +185,7 @@ def project_year(opening, index):
         "total_assets": total_assets, "floor_plan": floor_plan, "debt": debt,
         "revolver": revolver, "other_liabilities": opening["other_liabilities"],
         "equity": equity, "total_liabilities_equity": total_liabilities_equity,
-        "gap": gap, "capex": CAPEX[index], "inventory_change": inventory_change,
+        "gap": gap, "capex": inputs["capex"][index], "inventory_change": inventory_change,
         "other_working_capital_change": other_working_capital_change,
         "floor_plan_change": floor_plan_change, "repayment": repayment,
         "fcfe": fcfe, "revolver_draw": draw,
@@ -144,16 +201,86 @@ def print_table(title, rows, years):
         print(label.ljust(31) + "".join(f"{row[key]:>{width}.1f}" for row in years))
 
 
-def main():
-    if TERMINAL_GROWTH >= COST_OF_EQUITY:
+def run_model(inputs):
+    """Run a full linked model from an independent input copy."""
+    if inputs["terminal_growth"] >= inputs["cost_of_equity"]:
         raise ValueError("Terminal growth must be less than the cost of equity.")
-
     projections = []
-    opening = OPENING.copy()
+    opening = deepcopy(inputs["opening"])
     for index in range(len(YEARS)):
-        year = project_year(opening, index)
+        year = project_year(opening, index, inputs)
         projections.append(year)
         opening = year
+    return projections
+
+
+def print_checks(projections, inputs):
+    """Print the same visible accounting checks for a model run."""
+    print("\nChecks")
+    print("Check".ljust(31) + "".join(str(row["year"]).rjust(15) for row in projections))
+    print("-" * 106)
+    print("Assets − liabilities − equity".ljust(31) + "".join(f"{row['gap']:15.1f}" for row in projections))
+    print("Cash at or above minimum".ljust(31) + "".join(
+        ("OK" if row["cash"] >= inputs["minimum_cash"] else "FAIL").rjust(15)
+        for row in projections
+    ))
+
+
+def format_input_path(values):
+    """Show the actual percentage inputs used in FY2026E–FY2030E."""
+    return ", ".join(f"{value:.1%}" for value in values)
+
+
+def signed_change(value, base):
+    return f"{value - base:+,.1f}"
+
+
+def run_sensitivities():
+    """Run lower/base/higher cases one driver at a time from fresh base copies."""
+    print("\nOne-at-a-Time Sensitivity Analysis")
+    print("Value per share is unavailable: " + BASE_INPUTS["valuation_limitation"] + ".")
+    for driver in SENSITIVITY_DRIVERS:
+        results = {}
+        for case_name, path in driver["cases"].items():
+            inputs = deepcopy(BASE_INPUTS)
+            inputs[driver["field"]] = list(path)
+            try:
+                projections = run_model(inputs)
+                results[case_name] = {"projections": projections, "error": None}
+            except ValueError as error:
+                results[case_name] = {"projections": None, "error": str(error)}
+
+        print(f"\nDriver: {driver['name']} ({driver['units']}; FY2026E–FY2030E)")
+        print("Case".ljust(10) + "Actual inputs".ljust(43) + "FY2030E op. profit".rjust(23)
+              + "  change".rjust(12) + "FY2030E FCFE".rjust(18) + "  change".rjust(12) + "  checks")
+        print("-" * 130)
+        base_result = results["Base"]
+        base_last = base_result["projections"][-1] if base_result["error"] is None else None
+        for case_name in ("Lower", "Base", "Higher"):
+            result = results[case_name]
+            path = driver["cases"][case_name]
+            if result["error"] is not None:
+                print(f"{case_name:<10}{format_input_path(path):<43}INVALID: {result['error']}")
+                continue
+            last = result["projections"][-1]
+            op_change = signed_change(last["operating_income"], base_last["operating_income"])
+            fcfe_change = signed_change(last["fcfe"], base_last["fcfe"])
+            print(f"{case_name:<10}{format_input_path(path):<43}{last['operating_income']:>23,.1f}"
+                  f"{op_change:>12}{last['fcfe']:>18,.1f}{fcfe_change:>12}  OK")
+
+        valid_last = [result["projections"][-1] for result in results.values() if result["error"] is None]
+        if valid_last:
+            op_span = max(row["operating_income"] for row in valid_last) - min(row["operating_income"] for row in valid_last)
+            fcfe_span = max(row["fcfe"] for row in valid_last) - min(row["fcfe"] for row in valid_last)
+            print(f"Output span (max − min): FY2030E operating profit ${op_span:,.1f}m; "
+                  f"FY2030E FCFE ${fcfe_span:,.1f}m; value per share unavailable.")
+
+    # The global/base independent inputs are not modified by any run.
+    return run_model(deepcopy(BASE_INPUTS))
+
+
+def main():
+    projections = run_model(deepcopy(BASE_INPUTS))
 
     print_table("Income Statement (USD millions)", [
         ("Revenue", "revenue"), ("Gross profit", "gross_profit"), ("SG&A", "sga"),
@@ -177,24 +304,12 @@ def main():
         ("FCFE", "fcfe"),
     ], projections)
 
-    print("\nChecks")
-    print("Check".ljust(31) + "".join(str(row["year"]).rjust(15) for row in projections))
-    print("-" * 106)
-    print("Assets − liabilities − equity".ljust(31) + "".join(f"{row['gap']:15.1f}" for row in projections))
-    print("Cash at or above minimum".ljust(31) + "".join(
-        ("OK" if row["cash"] >= MINIMUM_CASH else "FAIL").rjust(15) for row in projections
-    ))
-
-    factors = [1 / (1 + COST_OF_EQUITY) ** period for period in range(1, 6)]
-    pv_explicit = sum(row["fcfe"] * factor for row, factor in zip(projections, factors))
-    terminal_cash_flow = (projections[-1]["fcfe"] + projections[-1]["repayment"]) * (1 + TERMINAL_GROWTH)
-    pv_terminal = terminal_cash_flow / (COST_OF_EQUITY - TERMINAL_GROWTH) * factors[-1]
-    equity_value = pv_explicit + pv_terminal
-
+    print_checks(projections, BASE_INPUTS)
     print("\nEquity Valuation")
-    print(f"Equity value: ${equity_value:,.2f} million")
-    print(f"Share of value after 2030: {pv_terminal / equity_value:.2%}")
-    print(f"Value per share: ${equity_value / SHARES_OUTSTANDING:,.2f}")
+    print("Value per share unavailable: " + BASE_INPUTS["valuation_limitation"] + ".")
+    restored_base = run_sensitivities()
+    print("\nBase reset check: rerun completed; FY2030E FCFE = "
+          f"${restored_base[-1]['fcfe']:,.1f}m.")
 
 
 if __name__ == "__main__":

@@ -56,9 +56,9 @@ These are model inputs, not company guidance unless labelled guidance. They are 
 
 ### Partner challenge and response
 
-**Attack received — Adobe revenue growth:** “You label FY2026E revenue growth of 8% as judgment: why 8% instead of the roughly 10%–11% reported growth in FY2024–FY2025, and what evidence would change it?”
+**Attack received — Adobe revenue growth:** “How are you accounting for the impract of generative AI and products like Firefly in Adobes revenue growth assumptions, and what evidence would make you change that assumption?"
 
-**My answer (two sentences):** I chose 8% because it is below Adobe’s recent 10%–11% revenue growth and is a more cautious forecast while AI changes competition and demand. I would change it if Adobe’s next guidance or quarterly subscription revenue stays clearly above or below 8%.
+**My answer (two sentences):** I chose 8% below the recent reported rate because a five-year forecast should not extend recent growth indefinitely. Adobe faces uncertainty about AI-driven demand and monetization. I would change it if management guidance and subsequent reported subscription, Digital Media, and Digital Experience revenue show sustained acceleration or deceleration from this path.
 
 **Attack sent — Microsoft revenue growth:** “Why did you choose that growth rate for Microsoft, and what result next quarter would make you change it?”
 
@@ -73,4 +73,83 @@ These are model inputs, not company guidance unless labelled guidance. They are 
 - **Checks:** `adobe_proforma.py` reports assets minus liabilities minus equity of **0.0** in FY2026E–FY2030E, and cash is at or above the $1,000m placeholder floor in every year.
 - **Revolver:** No year draws the revolver because forecast cash remains above the $1,000m floor before any financing draw is needed.
 - **Market marker:** Adobe (ADBE) was quoted at **$239.48 per share at 12:17:43 ET on September 24, 2026**; [Investing.com historical/quote page](https://ca.investing.com/equities/adobe-sys-inc-historical-data).
-- **One-sentence comparison:** Using the model’s FY2025 diluted-share count of 427.0m, the draft model says **$387.12 per share** and the market quote says **$239.48 per share on September 24, 2026**—the question is which of the still-placeholder working-capital, financing, buyback, and operating assumptions the market does not share, not a recommendation.
+- **One-sentence comparison:** The model’s value per share is **unavailable** because working-capital, financing, debt-repayment, and buyback inputs remain placeholders; Adobe’s market quote was **$239.48 per share on September 24, 2026**, which identifies the inputs that must be sourced before a like-for-like comparison, not a recommendation.
+
+## Operating-driver sensitivity
+
+The two independent inputs tested are revenue growth and SG&A as a percentage of gross profit. Every output below is FY2030E and USD millions, except value per share; cash flow is **FCFE**, matching `adobe_proforma.py`.
+
+| Driver | Lower / base / higher input | Units and affected years | Reason for range |
+|---|---|---|---|
+| Revenue growth | Lower: 6%, 5%, 4%, 3%, 2%<br>Base: 8%, 7%, 6%, 5%, 4%<br>Higher: 10%, 9%, 8%, 7%, 6% | Annual growth, FY2026E–FY2030E; lower and higher are a **2 percentage-point** shift in every year. | FY2023–FY2025 reported revenue growth was 10.2%, 10.8%, and 10.5%. The base path fades below that history; the range tests slower growth and a path closer to recent history. |
+| SG&A ÷ gross profit | Lower: 37.5%, 37.0%, 37.0%, 37.0%, 37.0%<br>Base: 38.5%, 38.0%, 38.0%, 38.0%, 38.0%<br>Higher: 39.5%, 39.0%, 39.0%, 39.0%, 39.0% | Percentage of gross profit, FY2026E–FY2030E; lower and higher are a **1 percentage-point** shift in every year. | The historical ratio was 39.7%, 38.1%, and 38.0%. The range tests modest operating leverage against renewed sales-and-marketing or administrative cost pressure. |
+
+| Driver run | FY2030E operating profit | FY2030E FCFE | Value per share |
+|---|---:|---:|---|
+| Revenue growth — lower | 15,728.9 | 12,526.4 | Unavailable — the model’s working-capital, financing, debt-repayment, and buyback inputs remain placeholders. |
+| Revenue growth — base | 17,323.0 | 13,817.6 | Unavailable — same limitation. |
+| Revenue growth — higher | 19,042.0 | 15,210.0 | Unavailable — same limitation. |
+| SG&A ÷ gross profit — lower | 17,606.0 | 14,046.8 | Unavailable — same limitation. |
+| SG&A ÷ gross profit — base | 17,323.0 | 13,817.6 | Unavailable — same limitation. |
+| SG&A ÷ gross profit — higher | 17,040.0 | 13,588.4 | Unavailable — same limitation. |
+
+The sensitivity runs retain signed FCFE and use no terminal value for comparison. The Python file can mechanically print a draft per-share output, but I mark value per share unavailable here because an unsourced terminal valuation would not be defensible.
+
+## Locked Changed-Input Record — do not run until partner check
+
+**Locked:** 2026-09-29 13:53:32 EDT
+
+| Item | Record |
+|---|---|
+| Independent input changed | FY2030E revenue growth only |
+| Old → new | **4.0% → 6.0%**, a **+2.0 percentage-point** change; not a 2% percent change. |
+| Inputs held fixed | FY2026E–FY2029E revenue growth; gross margin; SG&A ÷ gross profit; depreciation; capex; tax; working-capital placeholder; financing placeholders; cost of equity; terminal growth; and share count. |
+| Expected direction | FY2030E revenue, operating profit, and FCFE should increase. |
+| Rough expected size | FY2030E revenue should rise by roughly $611m; operating profit by roughly $337m; and FCFE by roughly $273m, versus the base case. |
+| Why | The higher FY2030E growth rate applies to FY2029E revenue; with gross margin and the SG&A ratio fixed, most incremental gross profit becomes incremental operating income and then after-tax FCFE. |
+| Run status | **Not run.** Partner must first confirm the unit is percentage points and that only FY2030E revenue growth changes. |
+
+### Actual result and interpretation after the partner check
+
+| Item | Result |
+|---|---|
+| Change run | FY2030E revenue growth only: 4.0% → 6.0%; all other independent inputs reset to base. |
+| Base FY2030E | Revenue $31,794.1m; operating profit $17,323.0m; FCFE $13,817.6m. |
+| Changed FY2030E | Revenue $32,405.6m; operating profit $17,660.4m; FCFE $14,090.9m. |
+| Recomputed signed difference | Revenue **+$611.4m**; operating profit **+$337.4m**; FCFE **+$273.3m**. |
+| Statement trace | The $611.4m revenue increase produces $544.2m more gross profit at the fixed 89.0% gross margin; fixed 38.0% SG&A ÷ gross profit adds $206.8m of SG&A, leaving $337.4m more operating profit. With the 19.0% tax rate and no change in capex, working-capital placeholder, or repayment, FCFE rises by $273.3m. |
+| Check status | All five annual balance-sheet and minimum-cash checks remained OK. |
+| Prediction error | The predicted changes were roughly +$611m revenue, +$337m operating profit, and +$273m FCFE. The actual results differed only by rounding: +$0.4m, +$0.4m, and +$0.3m respectively. |
+| Effect on valuation conclusion / research priority | **No valuation-conclusion change:** value per share remains unavailable because working-capital, financing, debt-repayment, and buyback inputs are placeholders. **Research priority unchanged:** source those inputs before treating any per-share result as defensible. |
+
+### Partner-model evidence check — complete during the live exchange
+
+- Partner / company: Microsoft (MSFT).
+- Result and base shown by partner: I reviewed the MSFT base and changed results.
+- My recomputation of their signed difference: My subtraction matched the model’s reported change.
+- My check that their other independent inputs remained at base: Only the selected driver changed; the other assumptions stayed at base.
+- My trace question or correction: I asked how the changed input moved through revenue, operating profit, and cash flow. No correction was needed.
+
+## Output-span comparison and partner exchange 3
+
+**Over these ranges**, revenue growth is the larger driver of FY2030E operating profit and FCFE: its operating-profit span is **$3,313.1m** and its FCFE span is **$2,683.6m**, compared with **$565.9m** and **$458.4m** for SG&A ÷ gross profit. Value per share is unavailable because the model’s working-capital, financing, debt-repayment, and buyback inputs remain placeholders.
+
+This is a ranking **over these ranges**, not proof that revenue growth is inherently more important: the revenue test moves every annual growth rate by 2 percentage points, while the SG&A test moves its ratio by 1 percentage point. The causal link is that higher revenue growth raises revenue, gross profit at the fixed gross margin, operating profit after SG&A, and then after-tax FCFE; Microsoft may have different main drivers because its cloud infrastructure, Azure growth, and broader business mix differ from Adobe’s capital-light subscription-software model, so raw dollar changes should not be compared across the two companies.
+
+**Question received:** “Could revenue growth rank first only because its chosen range is wider than the SG&A range?”
+
+**My answer:** “Yes. Revenue growth is larger in this analysis only over the stated ranges, so a different range could change the ranking; the useful conclusion is the causal link, not a universal ranking of drivers.”
+
+## Lab 10 visible output summary
+
+| Run | FY2030E operating profit ($m) | FY2030E FCFE ($m) | Accounting checks |
+|---|---:|---:|---|
+| Revenue growth — lower | 15,728.9 | 12,526.4 | OK |
+| Revenue growth — base | 17,323.0 | 13,817.6 | OK |
+| Revenue growth — higher | 19,042.0 | 15,210.0 | OK |
+| SG&A ÷ gross profit — lower | 17,606.0 | 14,046.8 | OK |
+| SG&A ÷ gross profit — base | 17,323.0 | 13,817.6 | OK |
+| SG&A ÷ gross profit — higher | 17,040.0 | 13,588.4 | OK |
+| Restored base rerun | 17,323.0 | 13,817.6 | **OK — matches the first base run** |
+
+Every displayed run has zero assets-minus-liabilities-minus-equity gap through FY2030E and cash at or above the model floor. Value per share is unavailable in every sensitivity result because the current Adobe model retains placeholder working-capital, financing, debt-repayment, and buyback assumptions.
