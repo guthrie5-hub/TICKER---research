@@ -1,0 +1,13 @@
+item,required,location_or_url,title,duration_or_as_of,timestamp_index,access_checked,frozen_or_commit_id,notes
+Edition A,Yes,,, , ,,,Locally reconstructed row name. Add only the unchanged Brightspace checkpoint artifact.
+Edition B,Yes,project_readiness.md,Current readiness draft,2026-10-07,,Local file opened 2026-10-07,,Readiness draft is not a final Edition B submission.
+Repository,Yes,https://github.com/guthrie5-hub/TICKER---research,,, ,,,Student must confirm instructional-team access and add a commit ID or tag.
+Environment file,Yes,requirements.txt,Audit dependency list,2026-10-07,,Local file opened 2026-10-07,,Project scripts use standard library except the supplied audit requires pandas.
+Visible executed output,Yes,visible_output.md,Terminal output summary,2026-10-07,,Local file opened 2026-10-07,,Raw results correspond to the commands in README.md.
+Decision memo/deck,Yes,project-1.md,Adobe initial research report,2026-10-07,,Local file opened 2026-10-07,,Draft only; valuation-date and architecture gaps remain.
+Validation record,Yes,validation_record.md,Project 1 validation record,2026-10-07,,Local file opened 2026-10-07,,Cold run and final high-risk test still required.
+Video 1,Yes,,,,,,,Not recorded; required for final Project 1 rather than readiness.
+Video 2,Yes,,,,,,,Not recorded; required for final Project 1 rather than readiness.
+Video 3,Yes,,,,,,,Not recorded; required for final Project 1 rather than readiness.
+Corrected transcripts,Yes,,,,,,,Not available until recordings exist.
+Frozen AI-use record,Yes,ai_use_record.md,AI-use record draft,2026-10-07,,Local file opened 2026-10-07,,Student must expand and freeze the final disclosure.
