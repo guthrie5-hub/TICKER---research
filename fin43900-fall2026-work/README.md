@@ -22,26 +22,37 @@ Current working call: **Initiate.** This is an educational working draft, not in
 
 ## Run commands
 
-Run the current Project 1 system:
+## Cold-run setup and commands
+
+The model itself requires a regular installation of **Python 3.10 or newer** and no third-party packages. Do not rely on this student's local `.uv` folder: it is not part of a fresh repository checkout.
+
+From the repository root, first enter the folder containing this README and the Python files. If you are already in that folder, skip this command:
 
 ```sh
-./.uv/bin/python3.13 adobe_project1.py
-./.uv/bin/python3.13 adobe_ev_comps.py
+cd fin43900-fall2026-work
+```
+
+Check that Python is available:
+
+```sh
+python3 --version
+```
+
+If that command does not print a Python version, install Python locally, reopen Terminal, and start again. Then run the current Project 1 system:
+
+```sh
+python3 adobe_project1.py
+python3 adobe_ev_comps.py
 ```
 
 The model uses no installed packages. It prints the FY2025 opening reconciliation, five projected statements, articulation checks, FCFF enterprise-to-equity bridge, WACC/growth grid, cases, and reverse DCF. `adobe_ev_comps.py` prints the two separately defined peer methods; it never averages them.
 
-The course-supplied manifest audit requires pandas. A project-local virtual environment contains it:
+The course-supplied manifest audit separately requires pandas. Only after the two model commands work, create an audit environment:
 
 ```sh
+python3 -m venv .venv
+./.venv/bin/python -m pip install -r requirements.txt
 ./.venv/bin/python project_audit.py project-submission-manifest-template.csv
-```
-
-To recreate that audit environment:
-
-```sh
-./.tools/uv/uv venv .venv --python ./.uv/bin/python3.13
-./.tools/uv/uv pip install --python ./.venv/bin/python -r requirements.txt
 ```
 
 ## Evidence boundary and remaining completion items

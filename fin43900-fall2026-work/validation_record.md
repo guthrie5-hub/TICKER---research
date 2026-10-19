@@ -56,8 +56,19 @@
 | What the reviewer reported | “The README identifies one important limitation: the Adobe pro-forma currently withholds its value-per-share estimate because several inputs remain placeholders. The DCF is a separate valuation model.” |
 | First failure | The reviewer reached an older README/version in the GitHub repository rather than the current local linked FCFF system. They therefore could not begin a cold run of the current model from the repository. |
 | Diagnosis | Local files were updated, but the GitHub repository had not yet been updated to match them. |
-| Repair | Push the current local files to GitHub, confirm the online README names `adobe_project1.py` and `adobe_ev_comps.py`, then repeat the README-only cold run without coaching. |
+| Repair | Push the current local files to GitHub. README now explicitly instructs the reviewer to `cd fin43900-fall2026-work` when starting at repository root and to use portable `python3` commands rather than the untracked local `.uv` interpreter. Repeat the README-only cold run without coaching. |
 | Elapsed time | Not reported; obtain it on the repeat run. |
+
+## README-only cold run — repeat after README repair
+
+| Field | Record |
+|---|---|
+| Environment | Fresh clean download; Python 3.13.16; no repository files modified. |
+| `python3 adobe_project1.py` | **Passed.** First and valuation output appeared in 0.034 seconds; value per share was $328.09. |
+| `python3 adobe_ev_comps.py` | **Failed**, exit 2, after 0.019 seconds. |
+| First issue | The README documents `adobe_ev_comps.py`, but that file was absent from `fin43900-fall2026-work` in the downloaded repository. Python reported it could not open the file. |
+| Diagnosis | The current local `adobe_ev_comps.py` file has not yet been pushed to the repository branch used for the cold run. |
+| Repair | Add and push `adobe_ev_comps.py` with the updated README, then repeat only `python3 adobe_ev_comps.py` from a clean download. |
 
 ## Current highest-risk claim
 
