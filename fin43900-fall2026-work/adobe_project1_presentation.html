@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adobe Project 1 Presentation</title>
+<style>
+  :root { --ink:#172033; --muted:#5d687b; --paper:#f8f7f3; --line:#d5d9e1; --blue:#163e70; --accent:#e1773f; --pale:#eaf0f7; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:#263345; color:var(--ink); font-family:Arial, Helvetica, sans-serif; }
+  .slide { display:none; width:min(1280px, 100vw); min-height:min(720px, 100vh); margin:auto; padding:58px 78px 52px; background:var(--paper); position:relative; }
+  .slide.active { display:block; }
+  h1 { font-size:58px; line-height:1.03; margin:0 0 18px; letter-spacing:-1.8px; color:var(--blue); }
+  h2 { font-size:36px; line-height:1.1; margin:0 0 22px; color:var(--blue); }
+  h3 { font-size:20px; color:var(--blue); margin:0 0 8px; }
+  p, li { font-size:22px; line-height:1.38; }
+  p { margin:0 0 14px; }
+  ul { margin:10px 0 0 24px; padding:0; }
+  li { margin:7px 0; }
+  .eyebrow { font-size:16px; font-weight:700; letter-spacing:1.6px; color:var(--accent); text-transform:uppercase; margin-bottom:20px; }
+  .sub { max-width:830px; color:var(--muted); font-size:26px; }
+  .rule { height:4px; width:92px; background:var(--accent); margin:28px 0; }
+  .two { display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:start; }
+  .metric { border-top:2px solid var(--blue); padding-top:14px; margin:18px 0; }
+  .metric strong { display:block; color:var(--blue); font-size:42px; letter-spacing:-1px; }
+  .metric span { font-size:18px; color:var(--muted); }
+  table { width:100%; border-collapse:collapse; margin-top:16px; font-size:19px; }
+  th { text-align:left; color:var(--blue); border-bottom:2px solid var(--blue); padding:10px 8px; }
+  td { padding:11px 8px; border-bottom:1px solid var(--line); }
+  .note { position:absolute; left:78px; right:78px; bottom:42px; font-size:15px; line-height:1.35; color:var(--muted); }
+  .speaker { margin-top:22px; padding:15px 18px; border-left:5px solid var(--accent); background:var(--pale); color:#263345; font-size:18px; line-height:1.42; }
+  .speaker b { color:var(--blue); }
+  .controls { position:fixed; right:22px; bottom:18px; color:white; font-size:14px; opacity:.85; }
+  .counter { position:absolute; right:78px; bottom:40px; color:var(--muted); font-size:16px; }
+  a { color:var(--blue); }
+  @media print { body { background:white; } .slide { display:block; page-break-after:always; width:1280px; min-height:720px; } .controls { display:none; } }
+</style>
+</head>
+<body>
+
+<section class="slide active">
+  <div class="eyebrow">FIN 43900 · Project 1</div>
+  <h1>Adobe (ADBE)<br>Investment Decision</h1>
+  <div class="rule"></div>
+  <p class="sub">Valuation date: September 24, 2026<br>Currency: USD · Share basis: 389.2 million point-in-time shares</p>
+  <div class="two" style="margin-top:58px; max-width:860px">
+    <div class="metric"><strong>Initiate</strong><span>Conditional committee action</span></div>
+    <div class="metric"><strong>$238.93</strong><span>Saved ADBE market close</span></div>
+  </div>
+  <div class="counter">1 / 9</div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Video 1 · Research evolution</div>
+  <h2>Company, decision user, and evidence</h2>
+  <div class="two">
+    <div>
+      <h3>Decision question</h3>
+      <p>Should a buy-side fund with no Adobe position initiate, watch/defer, or not initiate at $238.93 per share?</p>
+      <h3 style="margin-top:28px">Why Adobe</h3>
+      <p>Adobe sells subscription software for creative work, documents, and customer experience. Its recurring revenue and operating profitability make FCFF analysis appropriate.</p>
+    </div>
+    <div>
+      <h3>Primary evidence</h3>
+      <p>FY2025 10-K supplies the audited forecast base. The Q3 FY2026 release supplies updated revenue guidance. The Q3 FY2026 10-Q supplies cash, debt, and shares for the valuation bridge.</p>
+      <h3 style="margin-top:28px">What changed</h3>
+      <p>Early work had separate FCFE and DCF pieces. The final system links five years of statements to FCFF and an enterprise-to-equity bridge.</p>
+    </div>
+  </div>
+  <div class="counter">2 / 9</div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Video 1 · Research evolution</div>
+  <h2>Forecast evidence and judgment</h2>
+  <table>
+    <thead><tr><th>Input</th><th>Model treatment</th><th>What would change it</th></tr></thead>
+    <tbody>
+      <tr><td>FY2026 revenue</td><td>$26.601bn midpoint of Adobe guidance</td><td>FY2026 results or updated guidance</td></tr>
+      <tr><td>FY2027–FY2030 revenue</td><td>10%, 8%, 6%, then 4% growth fade</td><td>ARR, subscription growth, and pricing evidence</td></tr>
+      <tr><td>Operating margin</td><td>35.0% to 36.5%</td><td>GAAP margin, AI investment, and cost disclosures</td></tr>
+      <tr><td>WACC / terminal growth</td><td>10.0% / 2.5%</td><td>Updated beta, ERP, debt yield, capital structure, and long-run growth view</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top:26px">The assumptions are labeled as guidance, history, or judgment. A forecast is not a fact.</p>
+  <div class="counter">3 / 9</div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Video 2 · Code and validation</div>
+  <h2>Linked FCFF model</h2>
+  <div class="two">
+    <div>
+      <h3>Model flow</h3>
+      <p>FY2025 audited balance sheet</p>
+      <p style="font-size:28px;color:var(--accent)">↓</p>
+      <p>FY2026E–FY2030E income statement, balance sheet, and cash flow</p>
+      <p style="font-size:28px;color:var(--accent)">↓</p>
+      <p>FCFF and terminal value</p>
+      <p style="font-size:28px;color:var(--accent)">↓</p>
+      <p>Enterprise value + cash/investments − debt ÷ point-in-time shares</p>
+    </div>
+    <div>
+      <h3>Base valuation</h3>
+      <div class="metric"><strong>$128.416bn</strong><span>Enterprise value</span></div>
+      <div class="metric"><strong>$127.692bn</strong><span>Equity value</span></div>
+      <div class="metric"><strong>$328.09</strong><span>Value per share</span></div>
+    </div>
+  </div>
+  <div class="counter">4 / 9</div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Video 2 · Code and validation</div>
+  <h2>Validation record</h2>
+  <table>
+    <thead><tr><th>Check</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td>FY2025 opening reconciliation</td><td>$29.496bn assets = liabilities + equity</td></tr>
+      <tr><td>FY2026E–FY2030E articulation</td><td>Zero balance gaps; cash ties to the cash flow; cash remains above the floor</td></tr>
+      <tr><td>DCF direction check</td><td>Value rises with terminal growth and falls with WACC</td></tr>
+      <tr><td>Locked changed-input test</td><td>WACC 10% → 11%: $328.09 → $288.49 per share</td></tr>
+      <tr><td>Highest-risk test</td><td>WACC 10% → 12%: $328.09 → $257.25 per share</td></tr>
+      <tr><td>Fresh-process run</td><td>Both Python commands passed with no errors</td></tr>
+    </tbody>
+  </table>
+  <div class="counter">5 / 9</div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Video 3 · Valuation</div>
+  <h2>DCF scenarios and market price</h2>
+  <table>
+    <thead><tr><th>Case</th><th>FY2030E EBIT</th><th>FY2030E FCFF</th><th>Value per share</th></tr></thead>
+    <tbody>
+      <tr><td>AI / competition downside</td><td>$10.783bn</td><td>$9.097bn</td><td>$279.39</td></tr>
+      <tr><td>Base</td><td>$12.716bn</td><td>$10.871bn</td><td>$328.09</td></tr>
+      <tr><td>High</td><td>$13.882bn</td><td>$12.036bn</td><td>$359.20</td></tr>
+      <tr><td>Market price, September 24, 2026</td><td>—</td><td>—</td><td>$238.93</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top:26px">Revenue and operating margin drive EBIT, FCFF, and enterprise value in each case.</p>
+  <div class="counter">6 / 9</div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Video 3 · Valuation</div>
+  <h2>Sensitivity and peer evidence</h2>
+  <div class="two">
+    <div>
+      <h3>Value per share at 2.5% terminal growth</h3>
+      <div class="metric"><strong>$379.90</strong><span>9% WACC</span></div>
+      <div class="metric"><strong>$328.09</strong><span>10% WACC</span></div>
+      <div class="metric"><strong>$288.49</strong><span>11% WACC</span></div>
+    </div>
+    <div>
+      <h3>Peer EV / LTM revenue</h3>
+      <p>Policy-admitted peers: Autodesk and DocuSign.</p>
+      <div class="metric"><strong>$234.46–$369.00</strong><span>Implied Adobe range</span></div>
+      <div class="metric"><strong>$301.73</strong><span>Median reference</span></div>
+      <p style="font-size:18px">P/E remains separate because annual GAAP EPS periods differ across the companies.</p>
+    </div>
+  </div>
+  <div class="counter">7 / 9</div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Video 3 · Committee action</div>
+  <h2>Initiate, with conditions</h2>
+  <div class="two">
+    <div>
+      <h3>Why initiate</h3>
+      <p>The downside DCF value of $279.39 and base value of $328.09 exceed the $238.93 market price.</p>
+      <p>The conclusion relies on projected revenue growth and operating margins that generate FCFF. Revenue growth alone does not establish value.</p>
+    </div>
+    <div>
+      <h3>Why remain cautious</h3>
+      <p>71.8% of enterprise value occurs after FY2030. A 12% WACC reduces value to $257.25 per share.</p>
+      <p>The reverse DCF reaches the market price with a −7.72 percentage-point shift to each FY2027–FY2030 growth rate, holding other inputs fixed.</p>
+    </div>
+  </div>
+  <div class="counter">8 / 9</div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Video 3 · Monitoring and reversal</div>
+  <h2>Evidence that could change the decision</h2>
+  <div class="two">
+    <div>
+      <h3>Monitor</h3>
+      <ul>
+        <li>ARR and subscription-revenue growth</li>
+        <li>GAAP operating margin</li>
+        <li>AI-related cost and reinvestment disclosures</li>
+        <li>Updated WACC and peer evidence</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Reconsider or defer if</h3>
+      <ul>
+        <li>FY2026 revenue misses the $26.601bn base</li>
+        <li>GAAP margin falls materially below the approximately 35% base</li>
+        <li>ARR or subscription growth makes the downside case look too optimistic</li>
+        <li>The market price exceeds the supported range before operating evidence improves</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">Sources and detailed locators: adobe_project1_sources.md. Full model output and validation: visible_output.md and validation_record.md.</div>
+  <div class="counter">9 / 9</div>
+</section>
+
+<div class="controls">Use ← → keys or click the page</div>
+<script>
+  const slides = [...document.querySelectorAll('.slide')];
+  let current = 0;
+  function show(index) { current = (index + slides.length) % slides.length; slides.forEach((slide, i) => slide.classList.toggle('active', i === current)); }
+  document.addEventListener('keydown', event => { if (event.key === 'ArrowRight' || event.key === ' ') show(current + 1); if (event.key === 'ArrowLeft') show(current - 1); });
+  document.addEventListener('click', event => { if (!event.target.closest('a')) show(current + 1); });
+</script>
+</body>
+</html>
