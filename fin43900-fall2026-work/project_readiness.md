@@ -1,16 +1,15 @@
 # FIN 43900 Project 1 — ungraded readiness feedback
 
-Date: 2026-10-07  
+Date: 2026-10-18  
 Target: Adobe Inc. (ADBE)  
 Working currency: USD  
 
 ## Material attached evidence
 
-- Current research and draft decision: `project-1.md`
-- Adobe history, assumption table, sources, sensitivity record: `adobe_proforma_research.md`
-- Current executable pro-forma: `adobe_proforma.py`
-- Current standalone FCFF DCF: `dcf.py`
-- Current peer P/E calculator: `peer_valuation.py`
+- Current source/assumption record: `adobe_project1_sources.md`
+- Current linked three-statement FCFF DCF: `adobe_project1.py`
+- Current enterprise-value and equity-value peer calculator: `adobe_ev_comps.py`
+- Current committee memo: `adobe_project1_memo.md`
 - Saved terminal results: `visible_output.md`
 - Validation record: `validation_record.md`
 - README-only setup instructions: `README.md`
@@ -18,7 +17,7 @@ Working currency: USD
 
 ## Current decision and project risk
 
-The current draft call in `project-1.md` is Watch—defer. The main technical risk is that the Adobe pro-forma is currently an FCFE draft with material placeholders, while Project 1 requires a linked FCFF enterprise-value valuation with an enterprise-to-equity bridge.
+The current working call in `adobe_project1_memo.md` is Initiate. The main remaining analytical risk is not an FCFE/FCFF architecture gap: it is the high terminal-value share, the WACC judgment, and whether Adobe can meet the revenue/margin path after FY2026 guidance.
 
 ## Student completion required before submitting this readiness request
 
@@ -31,4 +30,4 @@ The course expressly requires the following items to be written or observed by t
 
 ## Specific feedback question
 
-Is the missing linkage between the Adobe pro-forma and an FCFF enterprise-value DCF the first repair that should be made, before extending peer or sensitivity analysis?
+Does the current Initiate decision overstate confidence given that 71.8% of enterprise value is terminal value and the EV/revenue peer range rests on only two admitted peers?
