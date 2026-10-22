@@ -1,6 +1,9 @@
 """Meridian baseline portfolios: return, volatility, and mandate reserve test."""
 
+import csv
+from datetime import date
 from math import sqrt
+from statistics import mean, stdev
 
 
 # ---------------- Editable inputs ----------------
@@ -31,6 +34,7 @@ CORRELATION = {
 }
 
 OBJECTIVE_RETURN = 0.065
+MINIMUM_RESERVE_ELIGIBLE_WEIGHT = 0.03
 
 
 def validate_correlation(correlation, sleeves):
@@ -95,6 +99,118 @@ def portfolio_volatility(weights, covariance, sleeves):
 def reserve_eligible_weight(weights, sleeves):
     """Return the bills plus 10-year-note weight."""
     return sum(weights[name] for name in sleeves if sleeves[name]["reserve_eligible"])
+
+
+def search_lowest_risk_mix(sleeves, correlation, objective_return, minimum_reserve_weight=0.0, step=0.05):
+    """Search long-only weight mixes and return the valid mix with lowest volatility.
+
+    `step` is a decimal weight: 0.05 means five percentage-point steps.
+    Returns None when no mix satisfies both requirements.
+    """
+    validate_correlation(correlation, sleeves)
+    names = list(sleeves)
+    units = round(1.0 / step)
+    if units <= 0 or abs(units * step - 1.0) > 1e-10:
+        raise ValueError("Search step must divide 100% exactly.")
+    covariance = covariance_matrix(sleeves, correlation)
+    best = None
+
+    def try_weights(position, units_left, partial):
+        nonlocal best
+        if position == len(names) - 1:
+            weights = dict(partial)
+            weights[names[position]] = units_left / units
+            portfolio_return = expected_return(weights, sleeves)
+            reserve_weight = reserve_eligible_weight(weights, sleeves)
+            if portfolio_return < objective_return or reserve_weight < minimum_reserve_weight:
+                return
+            volatility = portfolio_volatility(weights, covariance, sleeves)
+            candidate = {
+                "weights": weights,
+                "return": portfolio_return,
+                "volatility": volatility,
+                "reserve_eligible_weight": reserve_weight,
+            }
+            if best is None or candidate["volatility"] < best["volatility"]:
+                best = candidate
+            return
+        for asset_units in range(units_left + 1):
+            partial[names[position]] = asset_units / units
+            try_weights(position + 1, units_left - asset_units, partial)
+        partial.pop(names[position], None)
+
+    try_weights(0, units, {})
+    return best
+
+
+def estimate_from_prices(csv_source, last_36_months=False):
+    """Estimate annual returns, volatility, and correlations from monthly Adj Close CSV data.
+
+    The CSV must have Date first, oldest date first, and one positive-price column
+    per asset. Estimated returns are historical averages, not forecasts.
+    """
+    close_after = False
+    if isinstance(csv_source, (str, bytes)):
+        csv_source = open(csv_source, newline="")
+        close_after = True
+    try:
+        reader = csv.DictReader(csv_source)
+        columns = reader.fieldnames or []
+        if len(columns) < 3 or columns[0] != "Date":
+            raise ValueError("CSV must have Date as the first column and at least two asset columns.")
+        names = columns[1:]
+        prices = {name: [] for name in names}
+        previous_date = None
+        for row_number, row in enumerate(reader, start=2):
+            try:
+                current_date = date.fromisoformat(row["Date"])
+            except (TypeError, ValueError) as error:
+                raise ValueError(f"Invalid ISO date in row {row_number}: {row.get('Date')!r}") from error
+            if previous_date is not None and current_date <= previous_date:
+                raise ValueError("CSV dates must be oldest first with no duplicates.")
+            previous_date = current_date
+            for name in names:
+                try:
+                    price = float(row[name])
+                except (TypeError, ValueError) as error:
+                    raise ValueError(f"Invalid price for {name} in row {row_number}.") from error
+                if price <= 0:
+                    raise ValueError(f"Price for {name} in row {row_number} must be positive.")
+                prices[name].append(price)
+    finally:
+        if close_after:
+            csv_source.close()
+
+    if any(len(values) < 3 for values in prices.values()):
+        raise ValueError("CSV needs at least three monthly price rows.")
+    monthly_returns = {
+        name: [later / earlier - 1.0 for earlier, later in zip(values, values[1:])]
+        for name, values in prices.items()
+    }
+    if last_36_months:
+        monthly_returns = {name: values[-36:] for name, values in monthly_returns.items()}
+    observations = len(next(iter(monthly_returns.values())))
+    if observations < 2:
+        raise ValueError("At least two monthly returns are required.")
+
+    sleeves = {
+        name: {"return": mean(values) * 12.0, "volatility": stdev(values) * sqrt(12.0), "reserve_eligible": False}
+        for name, values in monthly_returns.items()
+    }
+    if any(values["volatility"] == 0.0 for values in sleeves.values()):
+        raise ValueError("A zero-volatility asset cannot produce a correlation estimate.")
+    correlation = {}
+    for left in sleeves:
+        correlation[left] = {}
+        for right in sleeves:
+            covariance = sum(
+                (a - mean(monthly_returns[left])) * (b - mean(monthly_returns[right]))
+                for a, b in zip(monthly_returns[left], monthly_returns[right])
+            ) / (observations - 1)
+            calculated = covariance / (stdev(monthly_returns[left]) * stdev(monthly_returns[right]))
+            # Floating-point arithmetic can make a diagonal value 1.0000000000000002.
+            correlation[left][right] = max(-1.0, min(1.0, calculated))
+    return sleeves, correlation
 
 
 def print_portfolio(name, weights, sleeves, covariance, objective_return):
