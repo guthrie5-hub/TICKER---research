@@ -2,6 +2,7 @@
 
 from copy import deepcopy
 from io import StringIO
+from pathlib import Path
 
 import streamlit as st
 
@@ -42,6 +43,7 @@ st.caption("Built with AI help, a learning demonstration, not investment advice.
 
 with st.sidebar:
     st.header("Search inputs")
+    dataset = st.radio("Dataset", ["Meridian training inputs", "My saved prices.csv"])
     objective = st.number_input("Objective return (%)", value=OBJECTIVE_RETURN * 100.0, step=0.1) / 100.0
     reserve_minimum = st.number_input(
         "Minimum reserve-eligible weight (%)",
@@ -50,21 +52,29 @@ with st.sidebar:
         max_value=100.0,
         step=1.0,
     ) / 100.0
-    uploaded = st.file_uploader("Upload monthly adjusted-close prices.csv", type="csv")
+    uploaded = st.file_uploader("Upload a replacement prices.csv", type="csv")
     last_36 = st.checkbox("Use only the last 36 monthly returns")
 
 try:
-    if uploaded is None:
+    saved_prices = Path(__file__).with_name("prices.csv")
+    if uploaded is None and dataset == "Meridian training inputs":
         loaded_sleeves = deepcopy(SLEEVES)
         loaded_correlation = deepcopy(CORRELATION)
         all_month_sleeves = deepcopy(SLEEVES)
         all_month_correlation = deepcopy(CORRELATION)
         input_label = "Meridian inputs as loaded"
     else:
-        csv_text = uploaded.getvalue().decode("utf-8-sig")
+        if uploaded is not None:
+            csv_text = uploaded.getvalue().decode("utf-8-sig")
+            csv_label = "Uploaded CSV estimates on all months"
+        else:
+            if not saved_prices.exists():
+                raise ValueError("Saved prices.csv is missing. Upload a CSV instead.")
+            csv_text = saved_prices.read_text(encoding="utf-8-sig")
+            csv_label = "My saved prices.csv estimates on all months"
         all_month_sleeves, all_month_correlation = estimate_from_prices(StringIO(csv_text))
         loaded_sleeves, loaded_correlation = estimate_from_prices(StringIO(csv_text), last_36_months=last_36)
-        input_label = "CSV estimates on all months"
+        input_label = csv_label
 except (UnicodeDecodeError, ValueError) as error:
     st.error(f"Could not use the uploaded CSV: {error}")
     st.stop()
