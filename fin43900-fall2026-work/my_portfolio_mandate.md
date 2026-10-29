@@ -66,3 +66,22 @@ Largest weight change between the two mixes: **25 percentage points** (VTI). The
 | BND | [Yahoo Finance chart data](https://query2.finance.yahoo.com/v8/finance/chart/BND?period1=1633046400&amp;period2=1790812800&amp;interval=1mo&amp;events=history&amp;includeAdjustedClose=true) | 2026-10-22 |
 | VTI | [Yahoo Finance chart data](https://query2.finance.yahoo.com/v8/finance/chart/VTI?period1=1633046400&amp;period2=1790812800&amp;interval=1mo&amp;events=history&amp;includeAdjustedClose=true) | 2026-10-22 |
 | VXUS | [Yahoo Finance chart data](https://query2.finance.yahoo.com/v8/finance/chart/VXUS?period1=1633046400&amp;period2=1790812800&amp;interval=1mo&amp;events=history&amp;includeAdjustedClose=true) | 2026-10-22 |
+
+## BAA point-in-time data card
+
+| Field | Record |
+|---|---|
+| Source | [FRED: Moody's Seasoned Baa Corporate Bond Yield (BAA)](https://fred.stlouisfed.org/series/BAA) and its ALFRED vintage download |
+| What it measures | Moody's Seasoned Baa Corporate Bond Yield; a broad corporate-credit yield relevant to bond pricing and financial conditions for the portfolio's equity sleeves. |
+| Units and frequency | Percent, not seasonally adjusted; monthly. |
+| Publication lag | The September 2026 observation was not available on 30 September: the 30 September vintage ended at August 2026. It appeared by 1 October as September 2026 = 6.47. |
+| Revisions | In the 30 September 2026 vintage comparison, zero same-date BAA values had been revised; FRED still notes that data are subject to revision. |
+| Download date | 2026-10-29 |
+
+Three values checked against the FRED series page: July 2026 = 6.19, August 2026 = 6.32, and September 2026 = 6.47. On 30 September, the app's latest knowable value was August 2026 = 6.32; today it includes September 2026 = 6.47, one later value and zero revisions. BAA is monthly rather than a daily market rate, so it has a publication lag in this test.
+
+**Project 2 series call — Admit with a point-in-time rule:** BAA is a relevant credit-condition input for the bond and equity sleeves, but each decision date may use only the ALFRED vintage available that day, never today's completed series. Quarantine it if a needed vintage cannot be retrieved or a publication-date issue prevents establishing what was knowable; admit it again once that evidence is available.
+
+## Skeptical self-check
+
+**Challenge:** If the September 2026 BAA value was published on 1 October, how does the model avoid using it for a 30 September trade? **Response:** The app requests the ALFRED vintage dated 30 September, which ends at August 2026 = 6.32, rather than using today's FRED value of September 2026 = 6.47. Using 6.47 at that earlier decision date would be look-ahead bias, so the series remains admissible only with its matching vintage date recorded.
