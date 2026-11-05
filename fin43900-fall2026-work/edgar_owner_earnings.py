@@ -15,13 +15,19 @@ import certifi
 TICKER_URL = "https://www.sec.gov/files/company_tickers.json"
 FACTS_URL = "https://data.sec.gov/api/xbrl/companyfacts/CIK{cik:010d}.json"
 SSL_CONTEXT = ssl.create_default_context(cafile=certifi.where())
+GRAHAM_CURRENT_RATIO_THRESHOLD = 2.0
 FLOW_TAGS = {
     "revenue": ["RevenueFromContractWithCustomerExcludingAssessedTax", "Revenues"],
     "net_income": ["NetIncomeLoss"],
     "operating_cash_flow": ["NetCashProvidedByUsedInOperatingActivities"],
     "capital_spending": ["PaymentsToAcquirePropertyPlantAndEquipment", "PaymentsToAcquireProductiveAssets"],
 }
-INSTANT_TAGS = {"equity": ["StockholdersEquity"]}
+INSTANT_TAGS = {
+    "equity": ["StockholdersEquity"],
+    "liabilities": ["Liabilities"],
+    "current_assets": ["AssetsCurrent"],
+    "current_liabilities": ["LiabilitiesCurrent"],
+}
 
 
 def user_agent():
@@ -124,6 +130,56 @@ def check_growth(values):
     return "pass" if values[-1] > values[0] else "fail"
 
 
+def check_pairwise(left_values, right_values, predicate):
+    """Return pass, fail, or not known for two required yearly inputs."""
+    if any(left is None or right is None for left, right in zip(left_values, right_values)):
+        return "not known"
+    return "pass" if all(predicate(left, right) for left, right in zip(left_values, right_values)) else "fail"
+
+
+def investor_panels(rows):
+    """Apply the course-defined Buffett, Graham, and Burry checks to shared facts."""
+    roe = [row["roe"] for row in rows]
+    owner = [row["owner_earnings"] for row in rows]
+    income = [row["net_income"]["value"] for row in rows]
+    ocf = [row["operating_cash_flow"]["value"] for row in rows]
+    latest = rows[-1]
+    latest_current_ratio = latest["current_ratio"]
+    latest_liabilities_to_equity = latest["liabilities_to_equity"]
+    panels = {
+        "Buffett": {
+            "ROE >= 15% every year": check_all(roe, lambda value: value >= 0.15),
+            "Owner earnings positive every year": check_all(owner, lambda value: value > 0),
+            "Owner earnings grew, first year to last": check_growth(owner),
+        },
+        "Graham": {
+            f"Current ratio >= {GRAHAM_CURRENT_RATIO_THRESHOLD:.2f} (latest year)": (
+                "not known" if latest_current_ratio is None
+                else "pass" if latest_current_ratio >= GRAHAM_CURRENT_RATIO_THRESHOLD else "fail"
+            ),
+            "Net income positive every year": check_all(income, lambda value: value > 0),
+            "Net income grew, first year to last": check_growth(income),
+        },
+        "Burry": {
+            "Operating cash flow >= net income every year": check_pairwise(ocf, income, lambda left, right: left >= right),
+            "Liabilities <= 2x equity (latest year)": (
+                "not known" if latest_liabilities_to_equity is None
+                else "pass" if latest_liabilities_to_equity <= 2.0 else "fail"
+            ),
+        },
+    }
+    return panels
+
+
+def panel_verdict(checks):
+    """Give a transparent result without replacing the individual checks."""
+    if all(outcome == "pass" for outcome in checks.values()):
+        return "pass"
+    if any(outcome == "fail" for outcome in checks.values()):
+        return "watch it"
+    return "not known"
+
+
 def analyse_ticker(ticker):
     """Return the required five-year 10-K-only analysis and checks."""
     cik, company_name = ticker_to_cik(ticker)
@@ -139,22 +195,25 @@ def analyse_ticker(ticker):
         row["owner_earnings"] = owner_earnings(
             row["operating_cash_flow"]["value"], row["capital_spending"]["value"]
         )
+        row["current_ratio"] = ratio_or_not_known(
+            row["current_assets"]["value"], row["current_liabilities"]["value"]
+        )
+        row["liabilities_to_equity"] = ratio_or_not_known(
+            row["liabilities"]["value"], row["equity"]["value"]
+        )
         row["owner_earnings_tag"] = (
             f"{row['operating_cash_flow']['tag']} − {row['capital_spending']['tag']}"
             if row["owner_earnings"] is not None else "not found"
         )
         rows.append(row)
 
-    roe_values = [row["roe"] for row in rows]
-    owner_values = [row["owner_earnings"] for row in rows]
-    checks = {
-        "ROE >= 15% every year": check_all(roe_values, lambda value: value >= 0.15),
-        "Owner earnings positive every year": check_all(owner_values, lambda value: value > 0),
-        "Owner earnings grew, first year to last": check_growth(owner_values),
-    }
+    panels = investor_panels(rows)
     return {
         "ticker": ticker.upper(), "company_name": company_name, "cik": f"{cik:010d}",
-        "rows": rows, "checks": checks, "download_date": date.today().isoformat(),
+        "rows": rows,
+        "checks": panels["Buffett"],
+        "panels": panels,
+        "download_date": date.today().isoformat(),
     }
 
 
@@ -165,12 +224,17 @@ def display_value(value, percent=False):
     return f"{value * 100:.2f}%" if percent else f"${value / 1_000_000:,.1f}m"
 
 
+def display_ratio(value):
+    """Format a balance-sheet ratio without treating it as dollars."""
+    return "not known" if value is None else f"{value:.2f}x"
+
+
 def report_text(result):
     """Build the terminal report; this is the canonical set of displayed numbers."""
     print(f"{result['company_name']} ({result['ticker']}) | CIK {result['cik']} | 10-K only")
     print(f"Download date: {result['download_date']}")
     print("Amounts in USD millions; XBRL tag follows each input.")
-    print("Fiscal year end | Revenue | Net income | Operating cash flow | Capital spending | Equity | ROE | Owner earnings")
+    print("Fiscal year end | Revenue | Net income | Operating cash flow | Capital spending | Equity | Liabilities | Current assets | Current liabilities | ROE | Current ratio | Liabilities/equity | Owner earnings")
     for row in result["rows"]:
         cells = [
             row["fiscal_year_end"],
@@ -179,50 +243,66 @@ def report_text(result):
             f"{display_value(row['operating_cash_flow']['value'])} [{row['operating_cash_flow']['tag']}]",
             f"{display_value(row['capital_spending']['value'])} [{row['capital_spending']['tag']}]",
             f"{display_value(row['equity']['value'])} [{row['equity']['tag']}]",
+            f"{display_value(row['liabilities']['value'])} [{row['liabilities']['tag']}]",
+            f"{display_value(row['current_assets']['value'])} [{row['current_assets']['tag']}]",
+            f"{display_value(row['current_liabilities']['value'])} [{row['current_liabilities']['tag']}]",
             f"{display_value(row['roe'], percent=True)} [NetIncomeLoss / StockholdersEquity]",
+            f"{display_ratio(row['current_ratio'])} [AssetsCurrent / LiabilitiesCurrent]",
+            f"{display_ratio(row['liabilities_to_equity'])} [Liabilities / StockholdersEquity]",
             f"{display_value(row['owner_earnings'])} [{row['owner_earnings_tag']}]",
         ]
         print(" | ".join(cells))
-    print("\nBuffett-style checks")
-    for label, outcome in result["checks"].items():
-        print(f"{label}: {outcome}")
+    for investor, checks in result["panels"].items():
+        print(f"\n{investor}-style checks")
+        for label, outcome in checks.items():
+            print(f"{label}: {outcome}")
+        print(f"Verdict: {panel_verdict(checks)}")
 
 
-def memo_text(result):
-    """Write a short judgment using only the displayed analysis and check outcomes."""
-    checks = result["checks"]
-    if all(outcome == "pass" for outcome in checks.values()):
-        action = "Own the business"
-        reason = "The defined ROE and owner-earnings checks all pass."
-    elif checks["Owner earnings positive every year"] == "fail":
-        action = "Pass"
-        reason = "Owner earnings were not positive in every known year."
+def memo_text(result, investor="Buffett"):
+    """Write a short investor memo using only printed checks and facts."""
+    checks = result["panels"][investor]
+    verdict = panel_verdict(checks)
+    if verdict == "pass":
+        action = "Own the business" if investor == "Buffett" else "Pass the defined screen"
+        reason = "Every defined check passes."
+    elif verdict == "watch it":
+        action = "Watch it"
+        reason = "At least one defined check fails."
     else:
         action = "Watch it"
-        reason = "The defined business-quality checks do not all pass or are not known."
+        reason = "At least one required input or check is not known."
+    threshold_note = ""
+    if investor == "Graham":
+        threshold_note = (
+            f"**Threshold retained:** Current ratio >= {GRAHAM_CURRENT_RATIO_THRESHOLD:.2f}; "
+            "I keep the course-defined cutoff rather than lower it to make this company pass.\n\n"
+        )
     return (
-        f"# {result['ticker']} Buffett-style business memo\n\n"
+        f"# {result['ticker']} {investor}-style business memo\n\n"
         f"**Decision: {action}.** {reason} This evaluates the business only, not its market price.\n\n"
         "## Decision on this verdict\n\n"
         "I trust this verdict as a limited business-quality screen because it uses five years of "
         "reported 10-K facts, but it does not establish whether the current share price is attractive.\n\n"
-        "Source: SEC EDGAR 10-K XBRL facts printed by `edgar_owner_earnings.py`. "
+        + threshold_note
+        + "Source: SEC EDGAR 10-K XBRL facts printed by `edgar_owner_earnings.py`. "
         f"Downloaded {result['download_date']}.\n"
     )
 
 
-def write_memo(result, path):
+def write_memo(result, path, investor="Buffett"):
     """Save the memo beside the script output."""
-    Path(path).write_text(memo_text(result), encoding="utf-8")
+    Path(path).write_text(memo_text(result, investor), encoding="utf-8")
 
 
 def main():
     ticker = sys.argv[1] if len(sys.argv) > 1 else "COST"
     result = analyse_ticker(ticker)
     report_text(result)
-    output_path = f"{result['ticker']}_buffett_memo.md"
-    write_memo(result, output_path)
-    print(f"\nMemo saved: {output_path}")
+    for investor in result["panels"]:
+        output_path = f"{result['ticker']}_{investor.lower()}_memo.md"
+        write_memo(result, output_path, investor)
+        print(f"\nMemo saved: {output_path}")
 
 
 if __name__ == "__main__":

@@ -85,3 +85,11 @@ Three values checked against the FRED series page: July 2026 = 6.19, August 2026
 ## Skeptical self-check
 
 **Challenge:** If the September 2026 BAA value was published on 1 October, how does the model avoid using it for a 30 September trade? **Response:** The app requests the ALFRED vintage dated 30 September, which ends at August 2026 = 6.32, rather than using today's FRED value of September 2026 = 6.47. Using 6.47 at that earlier decision date would be look-ahead bias, so the series remains admissible only with its matching vintage date recorded.
+
+## SEC investor-panel evidence
+
+The shared SEC EDGAR five-year 10-K panel reproduced Costco's required outcome: Buffett 3 of 3 passes; Graham 2 of 3, with the 1.06 latest current ratio failing the 2.00 cutoff; and Burry 2 of 2 passes. The Graham threshold probe lowered the cutoff to 1.00 in a temporary run; Costco then passed that check. The code remains set to the course-defined 2.00 threshold.
+
+Adobe (ADBE) was also run through the live panel as a target-company engine check. Buffett passed 3 of 3; Graham passed 2 of 3 because Adobe's latest current ratio was 1.00, below 2.00; and Burry passed 2 of 2. The saved evidence is `ADBE_panel_output.txt` plus the three Adobe memo files. This does not claim that Adobe is the portfolio's largest underlying holding; that holding must be identified from the relevant fund's official holdings disclosure before using it as the required fund-company run.
+
+**Panel decision:** Only with a condition: use the panel as a repeatable first screen only when every result is traced to the latest five 10-K facts and any `not known` result is investigated rather than treated as a pass.

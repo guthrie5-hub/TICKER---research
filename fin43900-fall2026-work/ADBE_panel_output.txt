@@ -1,0 +1,32 @@
+ADOBE INC. (ADBE) | CIK 0000796343 | 10-K only
+Download date: 2026-11-05
+Amounts in USD millions; XBRL tag follows each input.
+Fiscal year end | Revenue | Net income | Operating cash flow | Capital spending | Equity | Liabilities | Current assets | Current liabilities | ROE | Current ratio | Liabilities/equity | Owner earnings
+2021-12-03 | $15,785.0m [Revenues] | $4,822.0m [NetIncomeLoss] | $7,230.0m [NetCashProvidedByUsedInOperatingActivities] | $348.0m [PaymentsToAcquirePropertyPlantAndEquipment] | $14,797.0m [StockholdersEquity] | $12,444.0m [Liabilities] | $8,669.0m [AssetsCurrent] | $6,932.0m [LiabilitiesCurrent] | 32.59% [NetIncomeLoss / StockholdersEquity] | 1.25x [AssetsCurrent / LiabilitiesCurrent] | 0.84x [Liabilities / StockholdersEquity] | $6,882.0m [NetCashProvidedByUsedInOperatingActivities − PaymentsToAcquirePropertyPlantAndEquipment]
+2022-12-02 | $17,606.0m [Revenues] | $4,756.0m [NetIncomeLoss] | $7,838.0m [NetCashProvidedByUsedInOperatingActivities] | $442.0m [PaymentsToAcquirePropertyPlantAndEquipment] | $14,051.0m [StockholdersEquity] | $13,114.0m [Liabilities] | $8,996.0m [AssetsCurrent] | $8,128.0m [LiabilitiesCurrent] | 33.85% [NetIncomeLoss / StockholdersEquity] | 1.11x [AssetsCurrent / LiabilitiesCurrent] | 0.93x [Liabilities / StockholdersEquity] | $7,396.0m [NetCashProvidedByUsedInOperatingActivities − PaymentsToAcquirePropertyPlantAndEquipment]
+2023-12-01 | $19,409.0m [Revenues] | $5,428.0m [NetIncomeLoss] | $7,302.0m [NetCashProvidedByUsedInOperatingActivities] | $360.0m [PaymentsToAcquirePropertyPlantAndEquipment] | $16,518.0m [StockholdersEquity] | $13,261.0m [Liabilities] | $11,084.0m [AssetsCurrent] | $8,251.0m [LiabilitiesCurrent] | 32.86% [NetIncomeLoss / StockholdersEquity] | 1.34x [AssetsCurrent / LiabilitiesCurrent] | 0.80x [Liabilities / StockholdersEquity] | $6,942.0m [NetCashProvidedByUsedInOperatingActivities − PaymentsToAcquirePropertyPlantAndEquipment]
+2024-11-29 | $21,505.0m [Revenues] | $5,560.0m [NetIncomeLoss] | $8,056.0m [NetCashProvidedByUsedInOperatingActivities] | $183.0m [PaymentsToAcquirePropertyPlantAndEquipment] | $14,105.0m [StockholdersEquity] | $16,125.0m [Liabilities] | $11,232.0m [AssetsCurrent] | $10,521.0m [LiabilitiesCurrent] | 39.42% [NetIncomeLoss / StockholdersEquity] | 1.07x [AssetsCurrent / LiabilitiesCurrent] | 1.14x [Liabilities / StockholdersEquity] | $7,873.0m [NetCashProvidedByUsedInOperatingActivities − PaymentsToAcquirePropertyPlantAndEquipment]
+2025-11-28 | $23,769.0m [Revenues] | $7,130.0m [NetIncomeLoss] | $10,031.0m [NetCashProvidedByUsedInOperatingActivities] | $179.0m [PaymentsToAcquirePropertyPlantAndEquipment] | $11,623.0m [StockholdersEquity] | $17,873.0m [Liabilities] | $10,163.0m [AssetsCurrent] | $10,200.0m [LiabilitiesCurrent] | 61.34% [NetIncomeLoss / StockholdersEquity] | 1.00x [AssetsCurrent / LiabilitiesCurrent] | 1.54x [Liabilities / StockholdersEquity] | $9,852.0m [NetCashProvidedByUsedInOperatingActivities − PaymentsToAcquirePropertyPlantAndEquipment]
+
+Buffett-style checks
+ROE >= 15% every year: pass
+Owner earnings positive every year: pass
+Owner earnings grew, first year to last: pass
+Verdict: pass
+
+Graham-style checks
+Current ratio >= 2.00 (latest year): fail
+Net income positive every year: pass
+Net income grew, first year to last: pass
+Verdict: watch it
+
+Burry-style checks
+Operating cash flow >= net income every year: pass
+Liabilities <= 2x equity (latest year): pass
+Verdict: pass
+
+Memo saved: ADBE_buffett_memo.md
+
+Memo saved: ADBE_graham_memo.md
+
+Memo saved: ADBE_burry_memo.md
