@@ -1,0 +1,32 @@
+COSTCO WHOLESALE CORP /NEW (COST) | CIK 0000909832 | 10-K only
+Download date: 2026-11-05
+Amounts in USD millions; XBRL tag follows each input.
+Fiscal year end | Revenue | Net income | Operating cash flow | Capital spending | Equity | Liabilities | Current assets | Current liabilities | ROE | Current ratio | Liabilities/equity | Owner earnings
+2022-08-28 | $226,954.0m [RevenueFromContractWithCustomerExcludingAssessedTax] | $5,844.0m [NetIncomeLoss] | $7,392.0m [NetCashProvidedByUsedInOperatingActivities] | $3,891.0m [PaymentsToAcquirePropertyPlantAndEquipment] | $20,642.0m [StockholdersEquity] | $43,519.0m [Liabilities] | $32,696.0m [AssetsCurrent] | $31,998.0m [LiabilitiesCurrent] | 28.31% [NetIncomeLoss / StockholdersEquity] | 1.02x [AssetsCurrent / LiabilitiesCurrent] | 2.11x [Liabilities / StockholdersEquity] | $3,501.0m [NetCashProvidedByUsedInOperatingActivities − PaymentsToAcquirePropertyPlantAndEquipment]
+2023-09-03 | $242,290.0m [RevenueFromContractWithCustomerExcludingAssessedTax] | $6,292.0m [NetIncomeLoss] | $11,068.0m [NetCashProvidedByUsedInOperatingActivities] | $4,323.0m [PaymentsToAcquirePropertyPlantAndEquipment] | $25,058.0m [StockholdersEquity] | $43,936.0m [Liabilities] | $35,879.0m [AssetsCurrent] | $33,583.0m [LiabilitiesCurrent] | 25.11% [NetIncomeLoss / StockholdersEquity] | 1.07x [AssetsCurrent / LiabilitiesCurrent] | 1.75x [Liabilities / StockholdersEquity] | $6,745.0m [NetCashProvidedByUsedInOperatingActivities − PaymentsToAcquirePropertyPlantAndEquipment]
+2024-09-01 | $254,453.0m [RevenueFromContractWithCustomerExcludingAssessedTax] | $7,367.0m [NetIncomeLoss] | $11,339.0m [NetCashProvidedByUsedInOperatingActivities] | $4,710.0m [PaymentsToAcquirePropertyPlantAndEquipment] | $23,622.0m [StockholdersEquity] | $46,209.0m [Liabilities] | $34,246.0m [AssetsCurrent] | $35,464.0m [LiabilitiesCurrent] | 31.19% [NetIncomeLoss / StockholdersEquity] | 0.97x [AssetsCurrent / LiabilitiesCurrent] | 1.96x [Liabilities / StockholdersEquity] | $6,629.0m [NetCashProvidedByUsedInOperatingActivities − PaymentsToAcquirePropertyPlantAndEquipment]
+2025-08-31 | $275,235.0m [RevenueFromContractWithCustomerExcludingAssessedTax] | $8,099.0m [NetIncomeLoss] | $13,335.0m [NetCashProvidedByUsedInOperatingActivities] | $5,498.0m [PaymentsToAcquirePropertyPlantAndEquipment] | $29,164.0m [StockholdersEquity] | $47,935.0m [Liabilities] | $38,380.0m [AssetsCurrent] | $37,108.0m [LiabilitiesCurrent] | 27.77% [NetIncomeLoss / StockholdersEquity] | 1.03x [AssetsCurrent / LiabilitiesCurrent] | 1.64x [Liabilities / StockholdersEquity] | $7,837.0m [NetCashProvidedByUsedInOperatingActivities − PaymentsToAcquirePropertyPlantAndEquipment]
+2026-08-30 | $303,154.0m [RevenueFromContractWithCustomerExcludingAssessedTax] | $9,226.0m [NetIncomeLoss] | $15,817.0m [NetCashProvidedByUsedInOperatingActivities] | $6,435.0m [PaymentsToAcquirePropertyPlantAndEquipment] | $35,803.0m [StockholdersEquity] | $53,242.0m [Liabilities] | $46,582.0m [AssetsCurrent] | $43,952.0m [LiabilitiesCurrent] | 25.77% [NetIncomeLoss / StockholdersEquity] | 1.06x [AssetsCurrent / LiabilitiesCurrent] | 1.49x [Liabilities / StockholdersEquity] | $9,382.0m [NetCashProvidedByUsedInOperatingActivities − PaymentsToAcquirePropertyPlantAndEquipment]
+
+Buffett-style checks
+ROE >= 15% every year: pass
+Owner earnings positive every year: pass
+Owner earnings grew, first year to last: pass
+Verdict: pass
+
+Graham-style checks
+Current ratio >= 2.00 (latest year): fail
+Net income positive every year: pass
+Net income grew, first year to last: pass
+Verdict: watch it
+
+Burry-style checks
+Operating cash flow >= net income every year: pass
+Liabilities <= 2x equity (latest year): pass
+Verdict: pass
+
+Memo saved: COST_buffett_memo.md
+
+Memo saved: COST_graham_memo.md
+
+Memo saved: COST_burry_memo.md

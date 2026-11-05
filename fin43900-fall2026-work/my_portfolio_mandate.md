@@ -92,4 +92,6 @@ The shared SEC EDGAR five-year 10-K panel reproduced Costco's required outcome: 
 
 Adobe (ADBE) was also run through the live panel as a target-company engine check. Buffett passed 3 of 3; Graham passed 2 of 3 because Adobe's latest current ratio was 1.00, below 2.00; and Burry passed 2 of 2. The saved evidence is `ADBE_panel_output.txt` plus the three Adobe memo files. This does not claim that Adobe is the portfolio's largest underlying holding; that holding must be identified from the relevant fund's official holdings disclosure before using it as the required fund-company run.
 
+Apple (AAPL) was selected as an additional live company test. Buffett passed 3 of 3; Graham passed 2 of 3 because the latest current ratio was 1.02; and Burry failed both checks because operating cash flow was below net income in FY2025 and latest liabilities/equity was 2.61x. The saved evidence is `AAPL_panel_output.txt` plus the three Apple memo files. Apple is recorded as a selected test company, not as an asserted largest holding without a fund-holdings source.
+
 **Panel decision:** Only with a condition: use the panel as a repeatable first screen only when every result is traced to the latest five 10-K facts and any `not known` result is investigated rather than treated as a pass.

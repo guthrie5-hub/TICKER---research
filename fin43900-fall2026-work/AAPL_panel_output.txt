@@ -1,0 +1,32 @@
+Apple Inc. (AAPL) | CIK 0000320193 | 10-K only
+Download date: 2026-11-05
+Amounts in USD millions; XBRL tag follows each input.
+Fiscal year end | Revenue | Net income | Operating cash flow | Capital spending | Equity | Liabilities | Current assets | Current liabilities | ROE | Current ratio | Liabilities/equity | Owner earnings
+2022-09-24 | $394,328.0m [RevenueFromContractWithCustomerExcludingAssessedTax] | $99,803.0m [NetIncomeLoss] | $122,151.0m [NetCashProvidedByUsedInOperatingActivities] | $10,708.0m [PaymentsToAcquirePropertyPlantAndEquipment] | $50,672.0m [StockholdersEquity] | $302,083.0m [Liabilities] | $135,405.0m [AssetsCurrent] | $153,982.0m [LiabilitiesCurrent] | 196.96% [NetIncomeLoss / StockholdersEquity] | 0.88x [AssetsCurrent / LiabilitiesCurrent] | 5.96x [Liabilities / StockholdersEquity] | $111,443.0m [NetCashProvidedByUsedInOperatingActivities − PaymentsToAcquirePropertyPlantAndEquipment]
+2023-09-30 | $383,285.0m [RevenueFromContractWithCustomerExcludingAssessedTax] | $96,995.0m [NetIncomeLoss] | $110,543.0m [NetCashProvidedByUsedInOperatingActivities] | $10,959.0m [PaymentsToAcquirePropertyPlantAndEquipment] | $62,146.0m [StockholdersEquity] | $290,437.0m [Liabilities] | $143,566.0m [AssetsCurrent] | $145,308.0m [LiabilitiesCurrent] | 156.08% [NetIncomeLoss / StockholdersEquity] | 0.99x [AssetsCurrent / LiabilitiesCurrent] | 4.67x [Liabilities / StockholdersEquity] | $99,584.0m [NetCashProvidedByUsedInOperatingActivities − PaymentsToAcquirePropertyPlantAndEquipment]
+2024-09-28 | $391,035.0m [RevenueFromContractWithCustomerExcludingAssessedTax] | $93,736.0m [NetIncomeLoss] | $118,254.0m [NetCashProvidedByUsedInOperatingActivities] | $9,447.0m [PaymentsToAcquirePropertyPlantAndEquipment] | $56,950.0m [StockholdersEquity] | $308,030.0m [Liabilities] | $152,987.0m [AssetsCurrent] | $176,392.0m [LiabilitiesCurrent] | 164.59% [NetIncomeLoss / StockholdersEquity] | 0.87x [AssetsCurrent / LiabilitiesCurrent] | 5.41x [Liabilities / StockholdersEquity] | $108,807.0m [NetCashProvidedByUsedInOperatingActivities − PaymentsToAcquirePropertyPlantAndEquipment]
+2025-09-27 | $416,161.0m [RevenueFromContractWithCustomerExcludingAssessedTax] | $112,010.0m [NetIncomeLoss] | $111,482.0m [NetCashProvidedByUsedInOperatingActivities] | $12,715.0m [PaymentsToAcquirePropertyPlantAndEquipment] | $73,733.0m [StockholdersEquity] | $285,508.0m [Liabilities] | $147,957.0m [AssetsCurrent] | $165,631.0m [LiabilitiesCurrent] | 151.91% [NetIncomeLoss / StockholdersEquity] | 0.89x [AssetsCurrent / LiabilitiesCurrent] | 3.87x [Liabilities / StockholdersEquity] | $98,767.0m [NetCashProvidedByUsedInOperatingActivities − PaymentsToAcquirePropertyPlantAndEquipment]
+2026-09-26 | $478,834.0m [RevenueFromContractWithCustomerExcludingAssessedTax] | $132,175.0m [NetIncomeLoss] | $145,097.0m [NetCashProvidedByUsedInOperatingActivities] | $9,041.0m [PaymentsToAcquirePropertyPlantAndEquipment] | $112,093.0m [StockholdersEquity] | $292,455.0m [Liabilities] | $173,857.0m [AssetsCurrent] | $169,915.0m [LiabilitiesCurrent] | 117.92% [NetIncomeLoss / StockholdersEquity] | 1.02x [AssetsCurrent / LiabilitiesCurrent] | 2.61x [Liabilities / StockholdersEquity] | $136,056.0m [NetCashProvidedByUsedInOperatingActivities − PaymentsToAcquirePropertyPlantAndEquipment]
+
+Buffett-style checks
+ROE >= 15% every year: pass
+Owner earnings positive every year: pass
+Owner earnings grew, first year to last: pass
+Verdict: pass
+
+Graham-style checks
+Current ratio >= 2.00 (latest year): fail
+Net income positive every year: pass
+Net income grew, first year to last: pass
+Verdict: watch it
+
+Burry-style checks
+Operating cash flow >= net income every year: fail
+Liabilities <= 2x equity (latest year): fail
+Verdict: watch it
+
+Memo saved: AAPL_buffett_memo.md
+
+Memo saved: AAPL_graham_memo.md
+
+Memo saved: AAPL_burry_memo.md
